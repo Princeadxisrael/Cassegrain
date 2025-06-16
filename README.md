@@ -51,22 +51,31 @@ These instructions will get you a copy of the project up and running on your loc
 - IPFS node (local or remote service like Pinata)
 
 **Installation**
-Clone the repository:
-Bash
 
-git clone https://github.com/Cassegrain/cassegrain-backend.git
-cd cassegrain-backend
+Clone the repository
+
 2.  Install dependencies:
-bash npm install # or yarn install
-3.  Configure Environment Variables:
+    `npm install`  
+    _or_ 
+    
+    `yarn install`
+
+3.  Configure Environment Variables (not yet applicable):
+
+```
 Create a .env file in the root of the project and add the following:
 PORT=5000 DATABASE_URL="postgresql://user:password@host:port/database" JWT_SECRET="your_jwt_secret_key" SOLANA_RPC_URL="https://api.devnet.solana.com" # Or your local validator MAGIC_BLOCK_API_KEY="your_magic_block_api_key" MAGIC_BLOCK_RPC_URL="your_magic_block_rpc_url" # From Magic Block documentation IPFS_API_URL="http://localhost:5001" # Or your IPFS gateway # Add any other keys or configurations for Oracles, AI services, etc.
+```
+
 4.  Database Setup:
 * Ensure your PostgreSQL instance is running.
-* Run database migrations (if using a migration tool like Knex.js or TypeORM):
-bash npm run db:migrate # Example command
+* Run database migrations (if using a migration tool)
+
 5.  Run the development server:
-bash npm run dev # or yarn dev
+    `npm run dev`
+    _or_
+     
+    `yarn dev`
 The API server will run on http://localhost:5000 (or your configured port).
 
 ## API Endpoints (These are just for example purposes and are not implemented yet)
@@ -80,6 +89,7 @@ The API server will run on http://localhost:5000 (or your configured port).
 - GET /api/users/:userId/profile - Get user profile
 - POST /api/messages - Send a message
 
+```
 Project Structure (High-Level)
 cassegrain-backend/
 ├── src/
@@ -95,6 +105,7 @@ cassegrain-backend/
 ├── .env                    # Environment variables
 ├── package.json
 └── README.md
+```
 🤝 Contributing
 Contributions are welcome! Please follow these steps:
 
