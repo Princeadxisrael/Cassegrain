@@ -10,6 +10,8 @@ name = "cassegrain"
 
 [features]
 default = []
+custom-heap = []
+anchor-debug = []
 cpi = ["no-entrypoint"]
 no-entrypoint = []
 no-idl = []
