@@ -36,6 +36,7 @@ impl Space for ProductCategory {
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, Copy, PartialEq)]
 pub enum EventType {
+    Register,
     Manufactured,
     QualityCheck,
     Packaged,

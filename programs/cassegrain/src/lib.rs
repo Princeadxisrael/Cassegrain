@@ -7,10 +7,13 @@ pub use contexts::*;
 pub mod consts;
 pub mod error;
 // pub use contexts::*;
+
+use ephemeral_rollups_sdk::anchor::ephemeral;
     
 
 declare_id!("3QdPomKPoQwsFCRohMmQfsHd1LhoTN9ZrwwnsxbeFXnP");
 
+#[ephemeral]
 #[program]
 pub mod cassegrain {
     use super::*;
@@ -37,25 +40,69 @@ pub mod cassegrain {
     }
 
     /// Register a new product
-    pub fn register_product(
+    pub fn register_product_batch(
         ctx: Context<RegisterProduct>,
-        product_id: [u8; 32], 
-        metadata_ipfs: String, 
-        qr_code_hash: String,
+        batch_id: [u8; 32],
+        metadata_ipfs: Option<String>, 
         category: ProductCategory,
         batch_size: u8,
     ) -> Result<()> {
         ctx.accounts.register(
-            product_id, 
+            batch_id, 
             metadata_ipfs, 
-            qr_code_hash, 
             category, 
             batch_size, 
             ctx.bumps
         )
     }
 
-  
+    //create event 
 
-   
+    pub fn create_event(
+        ctx: Context<CreateEvent>,
+        batch_id: [u8; 32],
+        event_id: [u8; 32],
+        event_type: EventType,
+        metadata_ipfs: Option<String>,
+        order_status: OrderStatus,
+        previous_event: Option<Pubkey>,
+    ) -> Result<()> {
+       ctx.accounts.create_event(batch_id, event_id, event_type, metadata_ipfs, order_status, previous_event, ctx.bumps)
+    }
+
+    /// delegate event 
+    /// 
+
+    pub fn delegate_product(
+        ctx: Context<DelegateProduct>,
+        batch_id: [u8; 32],
+        event_id: [u8; 32],
+    ) -> Result<()> {
+       ctx.accounts.delegate_to_rollup(batch_id, event_id)
+    }
+
+    //event log 
+
+     pub fn event_log (
+        ctx: Context<RollupEventLog>,
+        batch_id: [u8; 32],
+        event_id: [u8; 32],
+        new_product_status: Option<ProductStatus>,
+        new_order_status: Option<OrderStatus>, 
+        new_event_type: Option<EventType>,
+        previous_event: Option<Pubkey>,
+        next_event: Option<Pubkey>,
+        metadata_ipfs: Option<String>,
+    ) -> Result<()> {
+      ctx.accounts.update_supply_chain_state(batch_id, event_id, new_product_status, new_order_status, new_event_type, previous_event, next_event, metadata_ipfs)
+    }
+    
+     pub fn undelegate_product(
+        ctx: Context<UndelegateProduct>,
+        batch_id: [u8; 32],
+        event_id: [u8; 32],
+    ) -> Result<()> {
+       ctx.accounts.undelegate(batch_id, event_id)
+    }
+ 
 }

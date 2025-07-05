@@ -1,20 +1,19 @@
 use anchor_lang::prelude::*;
-use crate::state::{EventType, VerificationStatus, OrderStatus};
+use crate::state::*;
 
 #[account]
 #[derive(InitSpace)]
-pub struct SupplyChainEvent {
-    pub event_id: [u8; 32],           // Unique event identifier
-    pub product_id: [u8; 32],          // Links to product
-    pub event_type: EventType,        // From your enum
-    pub actor: Pubkey,               // Who performed the action
-    pub timestamp: i64,              // time of action
-    // pub location: Option<Location>,   // From your struct
+pub struct ProductEvent {
+    pub event_id: [u8; 32],           
+    pub batch_id: [u8; 32],          
+    pub product_event_type: EventType,     
+    pub actor: Pubkey,              
+    pub timestamp: i64,       
     #[max_len(32)]
-    pub metadata_ipfs: String,       // Detailed event data on IPFS
-    pub verification_status: VerificationStatus, // From your enum
-    pub order_status: OrderStatus,    // From your enum  
-    pub previous_event: Option<Pubkey>, // Chain events together
-    pub next_event: Option<Pubkey>,     // Bidirectional linking
-    // pub real_time_data: Option<RealTimeData>, // IoT sensor data
+    pub metadata_ipfs: Option<String>, 
+    pub verification_status: VerificationStatus,
+    pub order_status: OrderStatus, 
+    pub previous_event: Option<Pubkey>, 
+    pub next_event: Option<Pubkey>, 
+    pub bumps: u8    
 }

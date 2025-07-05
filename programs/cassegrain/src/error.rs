@@ -42,4 +42,30 @@ pub enum CassegrainError {
     InvalidLocationData,
     #[msg("Manufacturer not verified")]
     ManufacturerNotVerified,
+    
+    #[msg("Invalid batch size")]
+    InvalidBatchSize,
+    
+    #[msg("Invalid IPFS hash")]
+    InvalidIPFSHash,
+    
+    #[msg("Batch not found")]
+    BatchNotFound,
+      #[msg("Events logged too frequently")]
+    EventTooFrequent,
+    
+    #[msg("Unauthorized to perform quality checks")]
+    UnauthorizedQualityCheck,
+    
+    #[msg("Unauthorized to log customs events")]
+    UnauthorizedCustomsEvent,
+    
+    #[msg("Event already exists")]
+    EventAlreadyExists,
+    
+    #[msg("Invalid batch ID")]
+    InvalidBatchId,
+    
+    #[msg("Invalid event ID")]
+    InvalidEventId,
 }
