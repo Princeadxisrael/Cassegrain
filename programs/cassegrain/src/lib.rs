@@ -11,7 +11,7 @@ pub mod error;
 use ephemeral_rollups_sdk::anchor::ephemeral;
     
 
-declare_id!("3QdPomKPoQwsFCRohMmQfsHd1LhoTN9ZrwwnsxbeFXnP");
+declare_id!("5oNsyMZ8XYiGibvzHtm8Y6QzBSpm3i5TrdnpLaevHTU9");
 
 #[ephemeral]
 #[program]

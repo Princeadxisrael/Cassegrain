@@ -78,7 +78,7 @@ impl<'info> RegisterProduct<'info> {
                 authenticity_verified: false,
                 category,
                 event_account: None,
-                manufacturer: self.manufacturer.key(),
+                manufacturer: self.manufacturer.owner,
                 total_events: 0,
                 batch_size,
                 bump: bumps.product_batch,

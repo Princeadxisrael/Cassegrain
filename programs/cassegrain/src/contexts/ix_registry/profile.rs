@@ -46,7 +46,7 @@ impl <'info> RegisterProfile<'info> {
         business_type, 
         owner: self.signer.key(),
         certifications, 
-        is_verified: false, 
+        is_verified: true,  // set to false and set a way to verify later
         bump: bumps.manufacturer
       });
 

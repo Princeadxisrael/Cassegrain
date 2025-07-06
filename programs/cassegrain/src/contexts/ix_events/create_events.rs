@@ -22,6 +22,7 @@ pub struct CreateEvent<'info> {
     pub events: Account<'info, ProductEvent>,
 
     #[account(
+        mut,
         seeds = [BATCH, batch_id.as_ref()],
         bump,
         constraint = product_batch.manufacturer == signer.key() 
@@ -72,15 +73,16 @@ impl<'info> CreateEvent<'info> {
             );
         }
 
-        // Rate limiting check to prevent spam
-        let time_since_last_event = clock.unix_timestamp - self.product_batch.last_updated;
-        require!(
-            time_since_last_event >= config.min_event_interval,
-            CassegrainError::EventTooFrequent
-        );
+        // Rate limiting check - only apply if there are already events
+        if self.product_batch.total_events > 0 {
+            let time_since_last_event = clock.unix_timestamp - self.product_batch.last_updated;
+            require!(
+                time_since_last_event >= config.min_event_interval,
+                CassegrainError::EventTooFrequent
+            );
+        }
 
-
-        // Create the event ONLY - no batch updates
+        // Create the event
         self.events.set_inner(ProductEvent {
             event_id,
             batch_id,
@@ -92,8 +94,12 @@ impl<'info> CreateEvent<'info> {
             order_status,
             previous_event,
             next_event: None,
-            bumps: bumps.product_batch
+            bumps: bumps.events,
         });
+
+        // Update product batch
+        self.product_batch.total_events += 1;
+        self.product_batch.last_updated = clock.unix_timestamp;
 
         // Emit event for off-chain tracking
         emit!(EventCreated {
@@ -106,9 +112,7 @@ impl<'info> CreateEvent<'info> {
 
         Ok(())
     }
-
-  }
-
+}
 
 // Event emission for pure event creation
 #[event]
