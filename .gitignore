@@ -4,4 +4,6 @@ target
 **/*.rs.bk
 node_modules
 test-ledger
+test-wallet
+test
 .yarn

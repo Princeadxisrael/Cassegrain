@@ -16,31 +16,31 @@ pub struct CassegrainConfig {
 }
 
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace)]
-pub struct Location {
-    pub latitude: f64,        
-    pub longitude: f64,       
-    #[max_len(32)]
-    pub address: String,         
-    #[max_len(32)]
-    pub facility_id: String,    
-}
+// #[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace)]
+// pub struct Location {
+//     pub latitude: f64,        
+//     pub longitude: f64,       
+//     #[max_len(32)]
+//     pub address: String,         
+//     #[max_len(32)]
+//     pub facility_id: String,    
+// }
 
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace)]
-pub struct ShippingAddress {
-    #[max_len(64)]
-    pub recipient_name: String,  
-    #[max_len(128)]
-    pub street_address: String,   
-    #[max_len(32)]
-    pub city: String,            
-    #[max_len(32)]
-    pub state: String,           
-    #[max_len(16)]
-    pub postal_code: Option<String>,     
-    #[max_len(32)]
-    pub country: String,           
-}
+// #[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace)]
+// pub struct ShippingAddress {
+//     #[max_len(64)]
+//     pub recipient_name: String,  
+//     #[max_len(128)]
+//     pub street_address: String,   
+//     #[max_len(32)]
+//     pub city: String,            
+//     #[max_len(32)]
+//     pub state: String,           
+//     #[max_len(16)]
+//     pub postal_code: Option<String>,     
+//     #[max_len(32)]
+//     pub country: String,           
+// }
 
 

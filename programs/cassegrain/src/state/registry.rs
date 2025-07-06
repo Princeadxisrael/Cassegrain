@@ -1,32 +1,40 @@
 use anchor_lang::prelude::*;
 use crate::state::{ProductCategory, ProductStatus, BusinessType};
 
-//I am thinking of batch situations -- discuss 
+
 #[account]
 #[derive(InitSpace)]
-pub struct Product {
-    pub product_id: [u8; 32],  
+pub struct ProductBatch{
+    pub batch_id: [u8; 32],
     #[max_len(32)]
     pub manufacturer_name: String,  
-    #[max_len(32)]  
-    // pub current_location: Option<String>,     
-    pub status: ProductStatus,       
+    pub status: ProductStatus,   
     pub created_at: i64,             
     pub last_updated: i64, 
     #[max_len(32)]         
-    pub metadata_ipfs: String,       // IPFS hash for detailed metadata
-   #[max_len(128)]
-    pub qr_code_hash: String,        // For consumer verification
+    pub metadata_ipfs: Option<String>,
     pub authenticity_verified: bool,  
     pub category: ProductCategory,    
     pub manufacturer: Pubkey,
-    pub current_owner: Option<Pubkey>,        
+    pub event_account: Option<Pubkey>,
     pub total_events: u32,
-    pub batch_size: u8, // Number of items in this batch
-    pub bump: u8, // Bump seed for PDA
-
-
+    pub batch_size: u8,
+    pub bump: u8,
 }
+
+// // redundant for first batch mvp, will be usefull later
+// #[account]
+// #[derive(InitSpace)]
+// pub struct Product {
+//     pub product_id: [u8; 32],  
+//     pub batch_id: [u8; 32], 
+//     pub created_at: i64,             
+//     pub last_updated: i64, 
+//     #[max_len(32)]         
+//     pub metadata_ipfs: Option<String>,
+//     pub current_owner: Option<Pubkey>,        
+//     pub bump: u8,
+// }
 
 
 #[account]
@@ -39,5 +47,5 @@ pub struct ManufacturerProfile {
     #[max_len(32)]
     pub certifications: String,
     pub is_verified: bool,
-    pub bump: u8, // Bump seed for PDA
+    pub bump: u8,
 }
