@@ -3,31 +3,18 @@ import { Program } from "@coral-xyz/anchor";
 import { Cassegrain } from "../target/types/cassegrain";
 import { PublicKey, Keypair, SystemProgram, LAMPORTS_PER_SOL, ComputeBudgetProgram } from "@solana/web3.js";
 import { expect } from "chai";
-import * as fs from "fs";
-import * as path from "path";
 import { GetCommitmentSignature } from "@magicblock-labs/ephemeral-rollups-sdk";
 
 /**
- * Load keypair from JSON file. Add a keypair and load it with sol 
+ * Generate a new keypair for testing
  */
-function loadKeypairFromFile(filename: string): Keypair {
-  try {
-    const walletDir = path.join(__dirname, "..", "test-wallet");
-    const walletPath = path.join(walletDir, filename);
-    
-    const secretKeyString = fs.readFileSync(walletPath, "utf8");
-    const secretKey = Uint8Array.from(JSON.parse(secretKeyString));
-    const keypair = Keypair.fromSecretKey(secretKey);
-    console.log(`📖 Loaded ${filename} with public key: ${keypair.publicKey.toString()}`);
-    return keypair;
-    
-  } catch (error) {
-    console.error(`Failed to load keypair ${filename}:`, error);
-    throw new Error(`Could not load wallet file: ${filename}`);
-  }
+function generateTestKeypair(role: string): Keypair {
+  const keypair = Keypair.generate();
+  console.log(`🔑 Generated ${role} keypair: ${keypair.publicKey.toString()}`);
+  return keypair;
 }
 
-
+// IMPROVED RAW TRANSACTION for Magic Block ER
 async function sendERTransaction(
   program: any,
   methodBuilder: any,
@@ -64,9 +51,9 @@ async function sendERTransaction(
 }
 
 describe("Cassegrain Supply Chain", () => {
-  // Base Layer Provider (Solana Devnet)
+  // Base Layer Provider (Solana Devnet) - Use public RPC
   const baseConnection = new anchor.web3.Connection(
-    "https://devnet.helius-rpc.com/?api-key=4a2f7893-25a4-4014-a367-4f2fac75aa63",
+    "https://api.devnet.solana.com",
     "confirmed"
   );
   
@@ -119,23 +106,37 @@ describe("Cassegrain Supply Chain", () => {
   const batchSize = 30;
 
   before(async () => {
-    console.log("\n🔐 Loading wallet keypairs...");
+    console.log("\n🔐 Generating test keypairs...");
     console.log("🌐 Running tests on Solana Devnet");
     
     try {
       authority = anchor.Wallet.local().payer;
-      manufacturer = loadKeypairFromFile("manufacturer.json");
-      logistics = loadKeypairFromFile("consumer.json");
-      consumer = loadKeypairFromFile("consumer.json");
+      manufacturer = generateTestKeypair("manufacturer");
+      logistics = generateTestKeypair("logistics");
+      consumer = generateTestKeypair("consumer");
 
-      console.log("✅ Wallets loaded successfully:");
+      console.log("✅ Keypairs generated successfully:");
       console.log(`  Authority: ${authority.publicKey.toString()}`);
       console.log(`  Manufacturer: ${manufacturer.publicKey.toString()}`);
       console.log(`  Logistics: ${logistics.publicKey.toString()}`);
       console.log(`  Consumer: ${consumer.publicKey.toString()}`);
 
+      // For testing, you might need to airdrop SOL to these accounts
+      console.log("💰 Requesting airdrop for test accounts...");
+      try {
+        await baseConnection.requestAirdrop(manufacturer.publicKey, 2 * LAMPORTS_PER_SOL);
+        await baseConnection.requestAirdrop(logistics.publicKey, 1 * LAMPORTS_PER_SOL);
+        await baseConnection.requestAirdrop(consumer.publicKey, 1 * LAMPORTS_PER_SOL);
+        
+        // Wait for airdrops to confirm
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        console.log("✅ Airdrop completed");
+      } catch (airdropError) {
+        console.log("⚠️ Airdrop failed (may be rate limited), continuing with existing balances...");
+      }
+
     } catch (error) {
-      console.error("❌ Failed to load keypairs:", error);
+      console.error("❌ Failed to generate keypairs:", error);
       throw error;
     }
 
@@ -261,7 +262,7 @@ describe("Cassegrain Supply Chain", () => {
           manufacturerProfile = await program.account.manufacturerProfile.fetch(manufacturerProfilePda);
         }
 
-       
+        // Fixed assertions based on actual program structure
         expect(manufacturerProfile.companyName).to.equal(companyName);
         expect(manufacturerProfile.owner.toString()).to.equal(manufacturer.publicKey.toString());
         expect(manufacturerProfile.isVerified).to.be.true; // Based on program logic
@@ -299,7 +300,7 @@ describe("Cassegrain Supply Chain", () => {
 
         const productBatch = await program.account.productBatch.fetch(productBatchPda);
         
-        
+        // Fixed assertions - manufacturer field stores the owner's key from manufacturer profile
         expect(productBatch.manufacturer.toString()).to.equal(manufacturer.publicKey.toString());
         expect(productBatch.batchSize).to.equal(batchSize);
         expect(productBatch.manufacturerName).to.equal(companyName);
@@ -450,6 +451,7 @@ describe("Cassegrain Supply Chain", () => {
             // Wait between updates for rate limiting
             await new Promise(resolve => setTimeout(resolve, 6000)); // Wait 6 seconds for 5-second rate limit
             
+            // Verify state on ER (optional - may not always work)
             try {
               const batchState = await ephemeralProgram.account.productBatch.fetch(productBatchPda);
               const eventState = await ephemeralProgram.account.productEvent.fetch(productEventPda);
@@ -491,7 +493,7 @@ describe("Cassegrain Supply Chain", () => {
             .eventLog(
               Array.from(batchId),
               Array.from(eventId),
-              null, 
+              null, // Don't change product status - just log quality check
               { confirmed: {} }, // OrderStatus::Confirmed
               { qualityCheck: {} }, // EventType::QualityCheck
               null,
